@@ -1,0 +1,5 @@
+node_modules/
+dist/
+.env
+.notification-state.json
+npm-debug.log*

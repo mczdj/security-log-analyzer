@@ -1,0 +1,80 @@
+Project Roadmap
+Phase 1 — Basic TypeScript Log Parser ✅ COMPLETED
+✅ Create TypeScript project
+✅ Read .log files
+✅ Split logs into individual lines
+✅ Create LogEntry
+✅ Parse log fields
+✅ Store structured events
+Phase 2 — Log Validation ✅ COMPLETED
+✅ Missing username detection
+✅ Missing IP detection
+✅ Missing basic fields
+✅ Report malformed logs
+✅ Continue processing after malformed logs
+✅ Dynamically locate fields
+✅ IPv4 validation
+✅ Date validation
+✅ Time validation
+✅ Allowed event-type validation
+✅ Unexpected-field detection
+✅ Duplicate-field detection
+Phase 3 — Authentication Attack Detection ✅ COMPLETED
+✅ Count successful logins
+✅ Count failed logins
+✅ Count failures by IP
+✅ Basic brute-force detection
+✅ Time-based brute-force detection
+✅ Password-spraying detection
+✅ Distributed account-attack detection
+✅ Successful login after repeated failures
+✅ Severity levels
+Phase 4 — TypeScript Architecture / Refactoring ✅ COMPLETED
+✅ types.ts
+✅ parser.ts
+✅ validator.ts
+✅ analyzer.ts
+✅ severity.ts
+✅ bruteForce.ts
+✅ passwordSpray.ts
+✅ distributedAttack.ts
+✅ successAfterFailures.ts
+✅ Clean index.ts
+✅ Verify refactored application
+Phase 5 — Structured Alert System ⬜
+⬜ Create proper Alert type
+⬜ Replace string[] alerts with Alert[]
+⬜ Attack-type field
+⬜ Severity field
+⬜ Source IP
+⬜ Username/account
+⬜ Timestamp
+⬜ Evidence/metadata
+Phase 6 — Web Attack Detection ⬜
+⬜ HTTP log format
+⬜ SQL injection
+⬜ XSS
+⬜ Path traversal
+⬜ Suspicious HTTP methods
+⬜ Request-rate analysis
+Phase 7 — Network Attack Detection ⬜
+⬜ Network log format
+⬜ Port scanning
+⬜ Rapid connection attempts
+⬜ Protocol anomalies
+⬜ Traffic anomalies
+Phase 8 — ARP Poisoning Detection ⬜
+⬜ ARP log format
+⬜ MAC validation
+⬜ IP → MAC mapping
+⬜ Mapping-change detection
+⬜ ARP alerts
+Phase 9 — Detection & Correlation ⬜
+⬜ DNS anomalies
+⬜ DoS-like behavior
+⬜ Suspicious admin activity
+⬜ Correlate multiple attack types
+⬜ Risk scoring
+Phase 10 — Security Report / JSON Output ⬜
+Phase 11 — Backend API ⬜
+Phase 12 — React Security Dashboard ⬜
