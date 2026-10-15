@@ -2,7 +2,7 @@ import nodemailer from "nodemailer";
 
 import type {
   Alert
-} from "../types";
+} from "../shared/alertTypes";
 
 // -----------------------------------------
 // GET REQUIRED ENVIRONMENT VARIABLE
@@ -11,8 +11,9 @@ import type {
 function getRequiredEnvironmentVariable(
   name: string
 ): string {
-  const value: string | undefined =
-    process.env[name];
+  const value:
+    string | undefined =
+      process.env[name];
 
   if (!value) {
     throw new Error(
@@ -31,13 +32,16 @@ function formatSingleAlert(
   alert: Alert,
   alertNumber: number
 ): string {
+
   const sourceIp: string =
     alert.sourceIp ??
-    alert.sourceIps?.join(", ") ??
+    alert.sourceIps
+      ?.join(", ") ??
     "N/A";
 
   const username: string =
-    alert.username ?? "N/A";
+    alert.username ??
+    "N/A";
 
   return `
 ==================================================
@@ -45,6 +49,7 @@ ALERT ${alertNumber}
 ==================================================
 
 Severity: ${alert.severity}
+
 Type: ${alert.type}
 
 Message:
@@ -63,7 +68,11 @@ Event Timestamp:
 ${alert.eventTimestamp ?? "N/A"}
 
 Evidence:
-${JSON.stringify(alert.evidence, null, 2)}
+${JSON.stringify(
+  alert.evidence,
+  null,
+  2
+)}
 `;
 }
 
@@ -74,19 +83,23 @@ ${JSON.stringify(alert.evidence, null, 2)}
 function formatAlertEmail(
   alerts: Alert[]
 ): string {
-  const formattedAlerts: string =
-    alerts
-      .map(
-        (
-          alert: Alert,
-          index: number
-        ) =>
-          formatSingleAlert(
-            alert,
-            index + 1
-          )
-      )
-      .join("\n");
+
+  const formattedAlerts:
+    string =
+      alerts
+        .map(
+          (
+            alert: Alert,
+            index: number
+          ) =>
+            formatSingleAlert(
+              alert,
+              index + 1
+            )
+        )
+        .join(
+          "\n"
+        );
 
   return `
 SECURITY ALERT SUMMARY
@@ -111,11 +124,16 @@ Log Analyzer Security System
 function getHighestSeverity(
   alerts: Alert[]
 ): "HIGH" | "CRITICAL" {
-  const hasCriticalAlert: boolean =
-    alerts.some(
-      (alert: Alert) =>
-        alert.severity === "CRITICAL"
-    );
+
+  const hasCriticalAlert:
+    boolean =
+      alerts.some(
+        (
+          alert: Alert
+        ) =>
+          alert.severity ===
+          "CRITICAL"
+      );
 
   return hasCriticalAlert
     ? "CRITICAL"
@@ -129,7 +147,10 @@ function getHighestSeverity(
 export async function sendEmailAlerts(
   alerts: Alert[]
 ): Promise<void> {
-  if (alerts.length === 0) {
+
+  if (
+    alerts.length === 0
+  ) {
     return;
   }
 
@@ -138,41 +159,64 @@ export async function sendEmailAlerts(
       "EMAIL_USER"
     );
 
-  const emailAppPassword: string =
-    getRequiredEnvironmentVariable(
-      "EMAIL_APP_PASSWORD"
-    );
+  const emailAppPassword:
+    string =
+      getRequiredEnvironmentVariable(
+        "EMAIL_APP_PASSWORD"
+      );
 
-  const alertEmail: string =
-    getRequiredEnvironmentVariable(
-      "ALERT_EMAIL"
-    );
+  const alertEmail:
+    string =
+      getRequiredEnvironmentVariable(
+        "ALERT_EMAIL"
+      );
+
+  // -----------------------------------------
+  // YAHOO SMTP
+  // -----------------------------------------
 
   const transporter =
     nodemailer.createTransport({
-      host: "smtp.mail.yahoo.com",
+      host:
+        "smtp.mail.yahoo.com",
+
       port: 465,
+
       secure: true,
 
       auth: {
-        user: emailUser,
-        pass: emailAppPassword
+        user:
+          emailUser,
+
+        pass:
+          emailAppPassword
       }
     });
 
-  const highestSeverity =
-    getHighestSeverity(alerts);
+  const highestSeverity:
+    "HIGH" | "CRITICAL" =
+      getHighestSeverity(
+        alerts
+      );
+
+  // -----------------------------------------
+  // SEND EMAIL
+  // -----------------------------------------
 
   await transporter.sendMail({
-    from: emailUser,
+    from:
+      emailUser,
 
-    to: alertEmail,
+    to:
+      alertEmail,
 
     subject:
       `[${highestSeverity}] Security Alert Summary - ` +
       `${alerts.length} alert(s) detected`,
 
     text:
-      formatAlertEmail(alerts)
+      formatAlertEmail(
+        alerts
+      )
   });
 }

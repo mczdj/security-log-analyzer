@@ -1,0 +1,15 @@
+2026-10-15 22:30:01 HTTP_REQUEST method=GET path=/index.html status=200 ip=192.168.1.10
+2026-10-15 22:30:10 HTTP_REQUEST method=POST path=/login status=200 ip=192.168.1.20
+2026-10-15 22:30:25 HTTP_REQUEST method=GET path=/products?id=5 status=200 ip=192.168.1.30
+
+2026-10-15 22:31:10 HTTP_REQUEST method=GET path=/products?id=1%27%20OR%201%3D1-- status=200 ip=45.22.18.91
+2026-10-15 22:31:30 HTTP_REQUEST method=GET path=/search?q=%3Cscript%3Ealert(1)%3C%2Fscript%3E status=200 ip=82.14.33.7
+2026-10-15 22:31:50 HTTP_REQUEST method=GET path=/download?file=../../../../etc/passwd status=403 ip=60.10.20.30
+
+2026-10-15 22:32:10 HTTP_REQUEST method=TRACE path=/admin status=405 ip=90.20.30.40
+2026-10-15 22:32:15 HTTP_REQUEST method=CONNECT path=/admin status=405 ip=90.20.30.40
+
+2026-10-15 22:33:01 HTTP_REQUEST method=GET path=/unknown1 status=404 ip=50.50.50.50
+2026-10-15 22:33:02 HTTP_REQUEST method=GET path=/unknown2 status=404 ip=50.50.50.50
+2026-10-15 22:33:03 HTTP_REQUEST method=GET path=/unknown3 status=404 ip=50.50.50.50
+2026-10-15 22:33:04 HTTP_REQUEST method=GET path=/unknown4 status=404 ip=50.50.50.50

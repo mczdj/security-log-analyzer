@@ -1,48 +1,75 @@
-import { readFileSync } from "node:fs";
+import {
+  readFileSync
+} from "node:fs";
 
-import type { Alert } from "./types";
+import type {
+  Alert
+} from "./shared/alertTypes";
 
-import { parseLogs } from "./parser";
-import { analyzeAuthentication } from "./analyzer";
+import {
+  parseLogs
+} from "./authentication/parser";
 
-import { detectBruteForce } from "./detectors/bruteForce";
-import { detectPasswordSpray } from "./detectors/passwordSpray";
-import { detectDistributedAttack } from "./detectors/distributedAttack";
-import { detectSuccessAfterFailures } from "./detectors/successAfterFailures";
+import {
+  analyzeAuthentication
+} from "./authentication/analyzer";
+
+import {
+  detectBruteForce
+} from "./authentication/detectors/bruteForce";
+
+import {
+  detectPasswordSpray
+} from "./authentication/detectors/passwordSpray";
+
+import {
+  detectDistributedAttack
+} from "./authentication/detectors/distributedAttack";
+
+import {
+  detectSuccessAfterFailures
+} from "./authentication/detectors/successAfterFailures";
 
 import {
   processNotifications
 } from "./notification/notificationManager";
 
-// -----------------------------------------
+// =========================================
 // MAIN APPLICATION
-// -----------------------------------------
+// =========================================
 
-async function main(): Promise<void> {
+async function main():
+Promise<void> {
 
-  // -----------------------------------------
-  // READ LOG FILE
-  // -----------------------------------------
+  // =========================================
+  // READ AUTHENTICATION LOGS
+  // =========================================
 
-  const logs: string = readFileSync(
-    "./logs/sample.log",
-    "utf8"
-  );
+  const logs: string =
+    readFileSync(
+      "./logs/authentication.log",
+      "utf8"
+    );
 
-  // -----------------------------------------
-  // PARSE LOGS
-  // -----------------------------------------
+  // =========================================
+  // PARSE AUTHENTICATION LOGS
+  // =========================================
 
   const {
     entries,
     invalidLogs
-  } = parseLogs(logs);
+  } = parseLogs(
+    logs
+  );
 
-  // -----------------------------------------
+  // =========================================
   // DISPLAY INVALID LOGS
-  // -----------------------------------------
+  // =========================================
 
-  for (const invalidLog of invalidLogs) {
+  for (
+    const invalidLog of
+    invalidLogs
+  ) {
     console.log(
       "⚠ Invalid log detected:"
     );
@@ -56,18 +83,18 @@ async function main(): Promise<void> {
     );
   }
 
-  // -----------------------------------------
-  // ANALYZE AUTHENTICATION EVENTS
-  // -----------------------------------------
+  // =========================================
+  // ANALYZE AUTHENTICATION
+  // =========================================
 
   const analysis =
     analyzeAuthentication(
       entries
     );
 
-  // -----------------------------------------
+  // =========================================
   // AUTHENTICATION SUMMARY
-  // -----------------------------------------
+  // =========================================
 
   console.log(
     "\n===== AUTHENTICATION SUMMARY ====="
@@ -85,9 +112,9 @@ async function main(): Promise<void> {
     `Failed logins: ${analysis.failedLogins}`
   );
 
-  // -----------------------------------------
-  // FAILED LOGIN ATTEMPTS BY IP
-  // -----------------------------------------
+  // =========================================
+  // FAILED LOGINS BY IP
+  // =========================================
 
   console.log(
     "\n===== FAILED LOGIN ATTEMPTS BY IP ====="
@@ -98,76 +125,87 @@ async function main(): Promise<void> {
     analysis.failedLoginCounts
   ) {
     const attempts: number =
-      analysis.failedLoginCounts[ip] ?? 0;
+      analysis.failedLoginCounts[
+        ip
+      ] ?? 0;
 
     console.log(
       `${ip}: ${attempts} failed attempt(s)`
     );
   }
 
-  // -----------------------------------------
-  // RUN SECURITY DETECTORS
-  // -----------------------------------------
+  // =========================================
+  // RUN AUTHENTICATION DETECTORS
+  // =========================================
 
-  const bruteForceAlerts: Alert[] =
-    detectBruteForce(
-      analysis.failedLoginTimes
-    );
+  const bruteForceAlerts:
+    Alert[] =
+      detectBruteForce(
+        analysis.failedLoginTimes
+      );
 
-  const passwordSprayAlerts: Alert[] =
-    detectPasswordSpray(
-      analysis.failedUsersByIp
-    );
+  const passwordSprayAlerts:
+    Alert[] =
+      detectPasswordSpray(
+        analysis.failedUsersByIp
+      );
 
-  const distributedAttackAlerts: Alert[] =
-    detectDistributedAttack(
-      analysis.failedIpsByUser
-    );
+  const distributedAttackAlerts:
+    Alert[] =
+      detectDistributedAttack(
+        analysis.failedIpsByUser
+      );
 
-  const successAfterFailureAlerts: Alert[] =
-    detectSuccessAfterFailures(
-      entries
-    );
+  const successAfterFailureAlerts:
+    Alert[] =
+      detectSuccessAfterFailures(
+        entries
+      );
 
-  // -----------------------------------------
+  // =========================================
   // COMBINE SECURITY ALERTS
-  // -----------------------------------------
+  // =========================================
 
-  const securityAlerts: Alert[] = [
-    ...bruteForceAlerts,
-    ...passwordSprayAlerts,
-    ...distributedAttackAlerts,
-    ...successAfterFailureAlerts
-  ];
+  const securityAlerts:
+    Alert[] = [
+      ...bruteForceAlerts,
+      ...passwordSprayAlerts,
+      ...distributedAttackAlerts,
+      ...successAfterFailureAlerts
+    ];
 
-  // -----------------------------------------
+  // =========================================
   // DISPLAY SECURITY ALERTS
-  // -----------------------------------------
+  // =========================================
 
   console.log(
     "\n===== SECURITY ALERTS ====="
   );
 
-  if (securityAlerts.length === 0) {
+  if (
+    securityAlerts.length === 0
+  ) {
     console.log(
       "No suspicious authentication activity detected."
     );
   } else {
-    for (const alert of securityAlerts) {
+
+    for (
+      const alert of
+      securityAlerts
+    ) {
 
       const icon: string =
-        alert.severity === "HIGH" ||
-        alert.severity === "CRITICAL"
+        alert.severity ===
+          "HIGH" ||
+        alert.severity ===
+          "CRITICAL"
           ? "🚨"
           : "⚠";
 
       console.log(
         `${icon} [${alert.severity}] ${alert.message}`
       );
-
-      // -----------------------------------------
-      // PASSWORD SPRAY DETAILS
-      // -----------------------------------------
 
       if (
         alert.type ===
@@ -177,17 +215,15 @@ async function main(): Promise<void> {
           alert.evidence.usernames;
 
         if (
-          Array.isArray(usernames)
+          Array.isArray(
+            usernames
+          )
         ) {
           console.log(
             `   Usernames: ${usernames.join(", ")}`
           );
         }
       }
-
-      // -----------------------------------------
-      // DISTRIBUTED ATTACK DETAILS
-      // -----------------------------------------
 
       if (
         alert.type ===
@@ -197,7 +233,9 @@ async function main(): Promise<void> {
           alert.evidence.ipAddresses;
 
         if (
-          Array.isArray(ipAddresses)
+          Array.isArray(
+            ipAddresses
+          )
         ) {
           console.log(
             `   IP addresses: ${ipAddresses.join(", ")}`
@@ -207,9 +245,9 @@ async function main(): Promise<void> {
     }
   }
 
-  // -----------------------------------------
-  // PROCESS EMAIL NOTIFICATIONS
-  // -----------------------------------------
+  // =========================================
+  // EMAIL NOTIFICATIONS
+  // =========================================
 
   console.log(
     "\n===== NOTIFICATIONS ====="
@@ -220,9 +258,9 @@ async function main(): Promise<void> {
       securityAlerts
     );
 
-  // -----------------------------------------
+  // =========================================
   // NOTIFICATION SUMMARY
-  // -----------------------------------------
+  // =========================================
 
   console.log(
     "\n===== NOTIFICATION SUMMARY ====="
@@ -248,9 +286,9 @@ async function main(): Promise<void> {
     `Failed notifications: ${notificationSummary.failed}`
   );
 
-  // -----------------------------------------
+  // =========================================
   // VALID LOGS
-  // -----------------------------------------
+  // =========================================
 
   console.log(
     "\n===== VALID LOGS ====="
@@ -261,12 +299,15 @@ async function main(): Promise<void> {
   );
 }
 
-// -----------------------------------------
+// =========================================
 // START APPLICATION
-// -----------------------------------------
+// =========================================
 
 main().catch(
-  (error: unknown) => {
+  (
+    error: unknown
+  ) => {
+
     console.error(
       "Fatal application error:"
     );

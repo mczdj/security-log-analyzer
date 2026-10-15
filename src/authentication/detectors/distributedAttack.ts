@@ -1,8 +1,10 @@
-import type { Alert } from "../types";
+import type {
+  Alert
+} from "../../shared/alertTypes";
 
 import {
   getSeverityFromCount
-} from "../severity";
+} from "../../shared/severity";
 
 export function detectDistributedAttack(
   failedIpsByUser: Record<string, Set<string>>,

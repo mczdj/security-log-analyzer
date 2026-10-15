@@ -1,8 +1,6 @@
-export type Severity =
-  | "LOW"
-  | "MEDIUM"
-  | "HIGH"
-  | "CRITICAL";
+import type {
+  Severity
+} from "./alertTypes";
 
 export function getSeverityFromCount(
   count: number

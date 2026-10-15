@@ -1,8 +1,10 @@
 import type {
-  Alert,
+  Alert
+} from "../../shared/alertTypes";
+
+import type {
   LogEntry
 } from "../types";
-
 export function detectSuccessAfterFailures(
   entries: LogEntry[],
   failureThreshold: number = 3,

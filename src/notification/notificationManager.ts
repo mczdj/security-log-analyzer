@@ -4,7 +4,7 @@ import {
 
 import type {
   Alert
-} from "../types";
+} from "../shared/alertTypes";
 
 import {
   sendEmailAlerts
@@ -111,11 +111,19 @@ function createAlertId(
   };
 
   const serializedAlert: string =
-    JSON.stringify(alertData);
+    JSON.stringify(
+      alertData
+    );
 
-  return createHash("sha256")
-    .update(serializedAlert)
-    .digest("hex");
+  return createHash(
+    "sha256"
+  )
+    .update(
+      serializedAlert
+    )
+    .digest(
+      "hex"
+    );
 }
 
 // -----------------------------------------
@@ -154,7 +162,9 @@ function wasAlreadySent(
   state: NotificationState
 ): boolean {
   return Boolean(
-    state.sentAlertIds[alertId]
+    state.sentAlertIds[
+      alertId
+    ]
   );
 }
 
@@ -167,17 +177,26 @@ function isCooldownActive(
   state: NotificationState,
   cooldownMs: number
 ): boolean {
-  const lastSent: string | undefined =
-    state.cooldowns[cooldownKey];
+  const lastSent:
+    string | undefined =
+      state.cooldowns[
+        cooldownKey
+      ];
 
   if (!lastSent) {
     return false;
   }
 
   const lastSentTime: number =
-    new Date(lastSent).getTime();
+    new Date(
+      lastSent
+    ).getTime();
 
-  if (Number.isNaN(lastSentTime)) {
+  if (
+    Number.isNaN(
+      lastSentTime
+    )
+  ) {
     return false;
   }
 
@@ -185,7 +204,10 @@ function isCooldownActive(
     Date.now() -
     lastSentTime;
 
-  return elapsed < cooldownMs;
+  return (
+    elapsed <
+    cooldownMs
+  );
 }
 
 // -----------------------------------------
@@ -195,38 +217,53 @@ function isCooldownActive(
 export async function processNotifications(
   alerts: Alert[]
 ): Promise<NotificationSummary> {
-  const state: NotificationState =
-    loadNotificationState();
+
+  const state:
+    NotificationState =
+      loadNotificationState();
 
   const cooldownMs: number =
     getCooldownMilliseconds();
 
-  const summary: NotificationSummary = {
-    sent: 0,
-    alertsIncluded: 0,
-    duplicateSkipped: 0,
-    cooldownSkipped: 0,
-    failed: 0
-  };
+  const summary:
+    NotificationSummary = {
+      sent: 0,
+      alertsIncluded: 0,
+      duplicateSkipped: 0,
+      cooldownSkipped: 0,
+      failed: 0
+    };
 
-  const pendingAlerts: PendingAlert[] = [];
+  const pendingAlerts:
+    PendingAlert[] = [];
 
   // -----------------------------------------
   // FILTER ALERTS
   // -----------------------------------------
 
-  for (const alert of alerts) {
+  for (
+    const alert of alerts
+  ) {
 
     // Ignore LOW / MEDIUM
-    if (!shouldSendEmail(alert)) {
+    if (
+      !shouldSendEmail(
+        alert
+      )
+    ) {
       continue;
     }
 
     const alertId: string =
-      createAlertId(alert);
+      createAlertId(
+        alert
+      );
 
-    const cooldownKey: string =
-      createCooldownKey(alert);
+    const cooldownKey:
+      string =
+        createCooldownKey(
+          alert
+        );
 
     // -----------------------------------------
     // DUPLICATE CHECK
@@ -238,7 +275,8 @@ export async function processNotifications(
         state
       )
     ) {
-      summary.duplicateSkipped++;
+      summary
+        .duplicateSkipped++;
 
       console.log(
         `♻️ Duplicate notification skipped for ${alert.type}`
@@ -258,7 +296,8 @@ export async function processNotifications(
         cooldownMs
       )
     ) {
-      summary.cooldownSkipped++;
+      summary
+        .cooldownSkipped++;
 
       console.log(
         `⏳ Notification cooldown active for ${alert.type}`
@@ -267,7 +306,10 @@ export async function processNotifications(
       continue;
     }
 
-    // Add this alert to the single email
+    // -----------------------------------------
+    // ADD ALERT TO EMAIL
+    // -----------------------------------------
+
     pendingAlerts.push({
       alert,
       alertId,
@@ -279,30 +321,43 @@ export async function processNotifications(
   // NOTHING TO SEND
   // -----------------------------------------
 
-  if (pendingAlerts.length === 0) {
+  if (
+    pendingAlerts.length === 0
+  ) {
     return summary;
   }
 
   // -----------------------------------------
-  // SEND ONE EMAIL
+  // SEND ONE COMBINED EMAIL
   // -----------------------------------------
 
   try {
-    const alertsToSend: Alert[] =
-      pendingAlerts.map(
-        (item: PendingAlert) =>
-          item.alert
-      );
+
+    const alertsToSend:
+      Alert[] =
+        pendingAlerts.map(
+          (
+            item: PendingAlert
+          ) =>
+            item.alert
+        );
 
     await sendEmailAlerts(
       alertsToSend
     );
 
     const sentAt: string =
-      new Date().toISOString();
+      new Date()
+        .toISOString();
 
-    // Save each included alert as sent
-    for (const item of pendingAlerts) {
+    // -----------------------------------------
+    // SAVE NOTIFICATION STATE
+    // -----------------------------------------
+
+    for (
+      const item of
+      pendingAlerts
+    ) {
       state.sentAlertIds[
         item.alertId
       ] = sentAt;
@@ -316,10 +371,10 @@ export async function processNotifications(
       state
     );
 
-    // One actual email was sent
+    // One combined email
     summary.sent = 1;
 
-    // Number of alerts inside the email
+    // Number of alerts inside email
     summary.alertsIncluded =
       pendingAlerts.length;
 
@@ -327,14 +382,19 @@ export async function processNotifications(
       `📧 Security summary email sent with ${pendingAlerts.length} alert(s)`
     );
 
-  } catch (error: unknown) {
+  } catch (
+    error: unknown
+  ) {
+
     summary.failed++;
 
     console.error(
       "❌ Failed to send security summary email"
     );
 
-    if (error instanceof Error) {
+    if (
+      error instanceof Error
+    ) {
       console.error(
         `   Reason: ${error.message}`
       );
