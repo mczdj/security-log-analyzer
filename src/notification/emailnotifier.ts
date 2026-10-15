@@ -133,14 +133,14 @@ export async function sendEmailAlerts(
     return;
   }
 
-  const gmailUser: string =
+  const emailUser: string =
     getRequiredEnvironmentVariable(
-      "GMAIL_USER"
+      "EMAIL_USER"
     );
 
-  const gmailAppPassword: string =
+  const emailAppPassword: string =
     getRequiredEnvironmentVariable(
-      "GMAIL_APP_PASSWORD"
+      "EMAIL_APP_PASSWORD"
     );
 
   const alertEmail: string =
@@ -150,11 +150,13 @@ export async function sendEmailAlerts(
 
   const transporter =
     nodemailer.createTransport({
-      service: "gmail",
+      host: "smtp.mail.yahoo.com",
+      port: 465,
+      secure: true,
 
       auth: {
-        user: gmailUser,
-        pass: gmailAppPassword
+        user: emailUser,
+        pass: emailAppPassword
       }
     });
 
@@ -162,7 +164,7 @@ export async function sendEmailAlerts(
     getHighestSeverity(alerts);
 
   await transporter.sendMail({
-    from: gmailUser,
+    from: emailUser,
 
     to: alertEmail,
 
