@@ -1,16 +1,8 @@
-// =========================================
-// SECURITY SEVERITY
-// =========================================
-
 export type Severity =
   | "LOW"
   | "MEDIUM"
   | "HIGH"
   | "CRITICAL";
-
-// =========================================
-// SECURITY ALERT TYPES
-// =========================================
 
 export type AlertType =
   // Authentication
@@ -24,31 +16,40 @@ export type AlertType =
   | "XSS_ATTACK"
   | "PATH_TRAVERSAL"
   | "SUSPICIOUS_HTTP_METHOD"
-  | "HIGH_REQUEST_RATE";
+  | "HIGH_REQUEST_RATE"
+  | "WEB_ENUMERATION"
 
-// =========================================
-// STRUCTURED SECURITY ALERT
-// =========================================
+  // Network
+  | "PORT_SCAN"
+  | "RAPID_CONNECTIONS"
+  | "SUSPICIOUS_PORT_ACCESS"
+  | "PROTOCOL_ANOMALY"
+  | "DNS_ANOMALY"
+  | "DOS_ACTIVITY"
+
+  // ARP
+  | "ARP_POISONING"
+
+  // Correlation
+  | "SUSPICIOUS_ADMIN_ACTIVITY"
+  | "ATTACK_CHAIN";
+
+export type AlertEvidenceValue =
+  | string
+  | number
+  | boolean
+  | string[]
+  | number[];
 
 export type Alert = {
   type: AlertType;
-
   severity: Severity;
-
   message: string;
-
   sourceIp?: string;
-
   sourceIps?: string[];
-
   username?: string;
-
   detectedAt: string;
-
   eventTimestamp?: string;
-
-  evidence: Record<
-    string,
-    string | number | string[]
-  >;
+  riskScore?: number;
+  evidence: Record<string, AlertEvidenceValue>;
 };

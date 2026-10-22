@@ -1,13 +1,27 @@
 {
-  "name": "log-analyzer",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "security-log-analyzer",
+  "version": "2.0.0",
+  "description": "Modular TypeScript security log analyzer with authentication, web, network, ARP, correlation, reporting, API, and React dashboard.",
+  "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc",
+    "analyze": "node --env-file=.env dist/index.js",
+    "start": "node --env-file=.env dist/api/server.js",
+    "api": "node --env-file=.env dist/api/server.js",
+    "test": "npm run build && node dist/tests/smokeTest.js",
+    "dashboard:install": "npm --prefix dashboard install",
+    "dashboard:dev": "npm --prefix dashboard run dev",
+    "dashboard:build": "npm --prefix dashboard run build",
+    "build:all": "npm run build && npm run dashboard:build"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "cybersecurity",
+    "siem",
+    "typescript",
+    "log-analysis",
+    "threat-detection"
+  ],
+  "author": "Mohamed",
   "license": "MIT",
   "type": "commonjs",
   "devDependencies": {
@@ -16,6 +30,6 @@
     "typescript": "^7.0.2"
   },
   "dependencies": {
-    "nodemailer": "^9.1.1"
+    "nodemailer": "^10.2.1"
   }
 }

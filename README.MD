@@ -1,542 +1,376 @@
 # 🛡️ Security Log Analyzer
 
-![TypeScript](https://img.shields.io/badge/TypeScript-Log%20Analyzer-3178C6?logo=typescript&logoColor=white)
-![Node.js](https://img.shields.io/badge/Node.js-Runtime-339933?logo=nodedotjs&logoColor=white)
-![Status](https://img.shields.io/badge/Status-In%20Development-orange)
-![License](https://img.shields.io/badge/License-MIT-green)
-![Phase](https://img.shields.io/badge/Current%20Progress-Phase%205%20Complete-success)
+A modular TypeScript security monitoring platform that parses multiple log sources, validates events, detects suspicious behavior, correlates attacks across domains, scores risk, generates reports, exposes an API, sends email alerts, and provides a React security dashboard.
 
-A modular **TypeScript cybersecurity log analyzer** designed to parse system logs, validate events, detect suspicious authentication activity, generate structured security alerts, and send intelligent email notifications.
+> **Status:** All 12 planned implementation phases are complete. The repository includes sample authentication, web, network, and ARP logs for testing.
 
-The long-term goal of the project is to evolve into a lightweight **SIEM-style security monitoring platform** with web attack detection, network analysis, correlation, reporting, an API, and a React dashboard.
+## ✅ Project Progress
 
----
+| Phase | Module | Status |
+|---|---|---|
+| 1 | Basic TypeScript Log Parser | ✅ Complete |
+| 2 | Log Validation | ✅ Complete |
+| 3 | Authentication Attack Detection | ✅ Complete |
+| 4 | Modular TypeScript Architecture | ✅ Complete |
+| 5 | Structured Alerts & Email Notifications | ✅ Complete |
+| 6 | Web Attack Detection | ✅ Complete |
+| 7 | Network Attack Detection | ✅ Complete |
+| 8 | ARP Poisoning Detection | ✅ Complete |
+| 9 | Detection, Correlation & Risk Scoring | ✅ Complete |
+| 10 | Security Reports / JSON Output | ✅ Complete |
+| 11 | Backend API | ✅ Complete |
+| 12 | React Security Dashboard | ✅ Complete |
 
-# 📌 Project Status
-
-## ✅ Completed
-
-| Phase | Status |
-|---|---|
-| Phase 1 — Basic TypeScript Log Parser | ✅ Completed |
-| Phase 2 — Log Validation | ✅ Completed |
-| Phase 3 — Authentication Attack Detection | ✅ Completed |
-| Phase 4 — TypeScript Architecture & Refactoring | ✅ Completed |
-| Phase 5 — Structured Alerts & Email Notifications | ✅ Completed |
-
----
-
-# 🚀 What's Coming Next?
-
-```mermaid
-flowchart LR
-    P6["🌐 Phase 6<br/>Web Attack Detection"]
-    P7["🌐 Phase 7<br/>Network Attack Detection"]
-    P8["🕵️ Phase 8<br/>ARP Poisoning Detection"]
-    P9["🧠 Phase 9<br/>Detection & Correlation"]
-    P10["📊 Phase 10<br/>Security Reports / JSON"]
-    P11["⚙️ Phase 11<br/>Backend API"]
-    P12["🖥️ Phase 12<br/>React Dashboard"]
-
-    P6 --> P7
-    P7 --> P8
-    P8 --> P9
-    P9 --> P10
-    P10 --> P11
-    P11 --> P12
+```text
+Authentication ─┐
+Web ─────────────┤
+Network ─────────┼─→ Detection Engines ─→ Alert[] ─→ Correlation ─→ Risk Score
+ARP ─────────────┘                                      │
+                                                       ├─→ Yahoo Email
+                                                       ├─→ JSON/Text Reports
+                                                       ├─→ HTTP API
+                                                       └─→ React Dashboard
 ```
 
-### Future Enhancement
+## 🔎 Detection Capabilities
 
-📱 **Telegram Security Notifications**
-
-Telegram integration is planned after the core Log Analyzer is complete and will provide mobile HIGH/CRITICAL security notifications using the existing alert system.
-
----
-
-# 🎯 Project Purpose
-
-Security logs can contain thousands of events, making manual analysis difficult.
-
-This project converts raw log entries into structured data and automatically looks for patterns associated with suspicious activity.
-
-The analyzer currently focuses on authentication security events and can detect patterns such as:
-
+### Authentication
 - Brute-force login attempts
-- Time-based brute-force attacks
-- Password-spraying attacks
-- Distributed attacks against accounts
-- Successful logins after repeated failures
+- Password spraying
+- Distributed account attacks
+- Successful login after repeated failures
+- Suspicious privileged-account logins
 
-The architecture is designed so additional detection engines can be added as the project grows.
+### Web
+- SQL injection
+- Cross-site scripting (XSS)
+- Path traversal
+- Suspicious HTTP methods
+- High request rates
+- Repeated 403/404 resource enumeration
 
----
+### Network
+- Port scanning
+- Rapid connection activity
+- Suspicious service/port access
+- Protocol anomalies
+- DNS anomalies
+- DoS-like connection bursts
 
-# 🧠 How It Works
+### ARP
+- IP-to-MAC mapping changes
+- Gateway mapping changes receive critical severity
 
-```text
-             Raw Log File
-                  │
-                  ▼
-             ┌─────────┐
-             │ Parser  │
-             └────┬────┘
-                  │
-                  ▼
-           ┌─────────────┐
-           │  Validator  │
-           └──────┬──────┘
-                  │
-                  ▼
-           ┌─────────────┐
-           │  Analyzer   │
-           └──────┬──────┘
-                  │
-                  ▼
-      ┌─────────────────────────┐
-      │ Security Detection      │
-      │ Engines                 │
-      └────────────┬────────────┘
-                   │
-                   ▼
-          ┌─────────────────┐
-          │ Structured      │
-          │ Security Alerts │
-          └────────┬────────┘
-                   │
-                   ▼
-          ┌─────────────────┐
-          │ Notification    │
-          │ Manager         │
-          └────────┬────────┘
-                   │
-          HIGH / CRITICAL
-                   │
-                   ▼
-          ┌─────────────────┐
-          │ Combined Email  │
-          │ Security Report │
-          └─────────────────┘
-```
+### Correlation
+- Same-source alerts are correlated into attack chains
+- Alerts receive a 0–100 risk score
+- Suspicious IPs are ranked by alert count, severity, and maximum risk
 
----
-
-# 🔍 Current Detection Capabilities
-
-## Brute-Force Detection
-
-Detects multiple failed login attempts from the same IP address within a configurable period.
-
-## Password Spraying
-
-Detects one IP address attempting to authenticate against multiple different usernames.
-
-## Distributed Account Attack
-
-Detects several different IP addresses attempting to authenticate against the same account.
-
-## Success After Repeated Failures
-
-Detects situations where several failed authentication attempts are followed by a successful login.
-
-This can indicate that an attacker eventually obtained valid credentials.
-
----
-
-# 🚨 Structured Security Alerts
-
-Detectors generate structured alert objects instead of simple strings.
-
-An alert can contain:
-
-```typescript
-{
-  type: "SUCCESS_AFTER_FAILURES",
-  severity: "HIGH",
-  sourceIp: "90.20.30.40",
-  username: "finance",
-  detectedAt: "...",
-  eventTimestamp: "...",
-  message: "...",
-  evidence: {
-    failedAttempts: 3,
-    windowMinutes: 5
-  }
-}
-```
-
-This makes alerts reusable across:
-
-- Console output
-- Email notifications
-- JSON reports
-- Future APIs
-- Future dashboards
-- Future Telegram notifications
-
----
-
-# 📧 Intelligent Email Notifications
-
-The analyzer includes an email notification system using **Nodemailer**.
-
-Only:
-
-```text
-HIGH
-CRITICAL
-```
-
-alerts generate email notifications.
-
-Multiple alerts detected during the same analysis are combined into **one security summary email** instead of sending a separate email for every event.
-
-Example:
-
-```text
-[HIGH] Security Alert Summary - 2 alert(s) detected
-
-ALERT 1
-DISTRIBUTED_ACCOUNT_ATTACK
-
-ALERT 2
-SUCCESS_AFTER_FAILURES
-```
-
----
-
-# ♻️ Duplicate Protection
-
-The analyzer stores notification history locally using:
-
-```text
-.notification-state.json
-```
-
-Previously sent alerts receive a unique SHA-256 fingerprint.
-
-If the exact same event is detected again:
-
-```text
-Alert Detected
-      │
-      ▼
-Fingerprint Generated
-      │
-      ▼
-Already Sent?
-   │       │
-  YES      NO
-   │       │
- Skip     Continue
-```
-
-This prevents repeated execution of the analyzer from flooding the inbox with duplicate emails.
-
----
-
-# ⏳ Notification Cooldown
-
-The notification manager also includes a configurable cooldown.
-
-A similar but newly generated alert occurring shortly after an existing notification can be temporarily suppressed.
-
-The default cooldown is:
-
-```text
-10 minutes
-```
-
-It can be changed through the environment configuration.
-
----
-
-# 🗂️ Project Structure
+## 📁 Architecture
 
 ```text
 security-log-analyzer/
-│
 ├── logs/
-│   └── sample.log
-│
+│   ├── authentication.log
+│   ├── web.log
+│   ├── network.log
+│   └── arp.log
 ├── src/
-│   │
-│   ├── detectors/
-│   │   ├── bruteForce.ts
-│   │   ├── distributedAttack.ts
-│   │   ├── passwordSpray.ts
-│   │   └── successAfterFailures.ts
-│   │
+│   ├── authentication/
+│   ├── web/
+│   ├── network/
+│   ├── arp/
+│   ├── correlation/
+│   ├── core/
 │   ├── notification/
-│   │   ├── emailnotifier.ts
-│   │   ├── notificationManager.ts
-│   │   └── notificationStore.ts
-│   │
-│   ├── analyzer.ts
-│   ├── index.ts
-│   ├── parser.ts
-│   ├── severity.ts
-│   ├── types.ts
-│   └── validator.ts
-│
-├── .gitignore
+│   ├── reporting/
+│   ├── api/
+│   ├── shared/
+│   ├── tests/
+│   └── index.ts
+├── dashboard/
+│   ├── src/
+│   ├── package.json
+│   └── vite.config.ts
+├── reports/                 # generated locally
+├── .env.example
 ├── package.json
-├── package-lock.json
 ├── tsconfig.json
-├── LICENSE
-└── README.md
+└── README.MD
 ```
 
----
+## ⚙️ Requirements
 
-# 🧪 Example Log Format
+- Node.js 20.19+ or 22.12+ recommended for the Vite dashboard
+- npm
+- Yahoo account + App Password only if email notifications are required
 
-```text
-2026-08-07 09:02:14 LOGIN_FAILED user=admin ip=45.22.18.91
-2026-08-07 09:02:20 LOGIN_FAILED user=admin ip=45.22.18.91
-2026-08-07 09:02:27 LOGIN_FAILED user=admin ip=45.22.18.91
-2026-08-07 09:05:10 LOGIN_SUCCESS user=ahmed ip=192.168.1.22
-```
+## 🚀 Installation
 
-The parser converts these entries into structured TypeScript objects before analysis.
-
----
-
-# ✅ Log Validation
-
-Malformed log entries are rejected without stopping the analyzer.
-
-Validation currently checks:
-
-- Required fields
-- Username presence
-- IP address presence
-- IPv4 validity
-- Date validity
-- Time validity
-- Supported event types
-- Unexpected fields
-- Duplicate fields
-
-Invalid logs are reported while valid events continue through the security analysis pipeline.
-
----
-
-# ⚠️ Severity Levels
-
-Security events are classified using four severity levels:
-
-```text
-LOW
-MEDIUM
-HIGH
-CRITICAL
-```
-
-Severity determines how suspicious activity is handled and whether an email notification should be generated.
-
----
-
-# 🛠️ Technologies
-
-| Technology | Purpose |
-|---|---|
-| TypeScript | Main programming language |
-| Node.js | Application runtime |
-| Nodemailer | Email notification delivery |
-| Git | Version control |
-| GitHub | Source code hosting |
-
----
-
-# ⚙️ Installation
-
-Clone the repository:
+Clone the repository and enter it:
 
 ```bash
 git clone https://github.com/mczdj/security-log-analyzer.git
-```
-
-Enter the project directory:
-
-```bash
 cd security-log-analyzer
 ```
 
-Install dependencies:
+Install backend/analyzer dependencies:
 
 ```bash
 npm install
 ```
 
-Compile TypeScript:
-
-```bash
-npx tsc
-```
-
----
-
-# 🔐 Environment Configuration
-
-Create a `.env` file in the project root.
+Create `.env` from `.env.example`:
 
 ```env
-GMAIL_USER=your-email@gmail.com
-GMAIL_APP_PASSWORD=your-app-password
-ALERT_EMAIL=security-alert-recipient@example.com
-
+EMAIL_USER=your-yahoo-email@yahoo.com
+EMAIL_APP_PASSWORD=your-yahoo-app-password
+ALERT_EMAIL=recipient@example.com
 NOTIFICATION_COOLDOWN_MINUTES=10
+NOTIFICATIONS_ENABLED=true
+API_PORT=3001
 ```
 
-> [!IMPORTANT]
-> Never commit `.env` to GitHub.
->
-> Gmail App Passwords and other credentials must remain private.
+Never commit `.env`.
 
-The repository's `.gitignore` prevents `.env` from being tracked.
+## 🧪 Build and Test
 
----
-
-# ▶️ Running the Analyzer
-
-Compile:
+Compile the TypeScript project:
 
 ```bash
-npx tsc
+npm run build
 ```
 
-Run the application while loading environment variables:
+Run the automated smoke test:
 
 ```bash
-node --env-file=.env dist/index.js
+npm test
 ```
 
----
+The smoke test analyzes the bundled logs without sending email and verifies that authentication, web, network, ARP, correlation, and risk scoring are working.
 
-# 🖥️ Example Console Output
+## ▶️ Run the Analyzer
+
+```bash
+npm run build
+npm run analyze
+```
+
+To test the CLI without sending email, set `NOTIFICATIONS_ENABLED=false` in `.env`.
+
+The CLI:
+- analyzes all four log sources
+- displays invalid logs
+- displays security alerts and risk scores
+- ranks suspicious IPs
+- sends one combined HIGH/CRITICAL email when required
+- generates reports
+
+Generated reports:
 
 ```text
-===== AUTHENTICATION SUMMARY =====
-
-Total valid events: 22
-Successful logins: 5
-Failed logins: 17
-
-===== SECURITY ALERTS =====
-
-⚠ [MEDIUM] Possible brute-force attack
-⚠ [MEDIUM] Possible password-spraying attack
-
-🚨 [HIGH] Possible distributed account attack
-🚨 [HIGH] Successful login after repeated failures
-
-===== NOTIFICATIONS =====
-
-📧 Security summary email sent with 2 alert(s)
-
-===== NOTIFICATION SUMMARY =====
-
-Emails sent: 1
-Alerts included in emails: 2
-Duplicates skipped: 0
-Cooldown skips: 0
-Failed notifications: 0
+reports/security-report.json
+reports/security-summary.txt
 ```
 
----
+## 📧 Email Notifications
 
-# 🔒 Security Considerations
+The notification manager:
+- sends only HIGH and CRITICAL alerts
+- combines multiple alerts into one summary email
+- fingerprints alerts with SHA-256
+- suppresses exact duplicates
+- applies a configurable cooldown to related alerts
+- stores local notification history in `.notification-state.json`
 
-This project is intended for:
+`.notification-state.json` and `.env` are excluded from Git.
 
-- Cybersecurity learning
-- Defensive security experimentation
-- Log-analysis development
-- Authorized security environments
+## 🌐 API
 
-Do not commit credentials, API keys, passwords, private production logs, or other sensitive information to the repository.
+Build first:
 
-Real organizational logs should be sanitized before being used for testing or demonstrations.
+```bash
+npm run build
+```
 
----
+Start the API:
 
-# 🧩 Development Philosophy
+```bash
+npm run start
+```
 
-The project is being built incrementally.
-
-Each phase introduces new cybersecurity concepts while keeping the code modular enough for future detectors and data sources to integrate into the same alert pipeline.
-
-The eventual architecture is intended to resemble a lightweight SIEM:
+Default address:
 
 ```text
-Multiple Log Sources
-        │
-        ▼
-Parsing & Validation
-        │
-        ▼
-Detection Engines
-        │
-        ▼
-Correlation
-        │
-        ▼
-Risk Scoring
-        │
-        ▼
-Security API
-        │
-        ▼
-React Dashboard
+http://localhost:3001
 ```
 
----
+### Endpoints
 
-# 🤝 Contributions
+| Method | Endpoint | Purpose |
+|---|---|---|
+| GET | `/api/health` | Service health |
+| GET | `/api/alerts` | Current alerts |
+| GET | `/api/stats` | Event and severity statistics |
+| GET | `/api/suspicious-ips` | Ranked suspicious IPs |
+| GET | `/api/report` | Complete analysis result |
+| GET | `/api/logs/:type` | Raw log content |
+| POST | `/api/analyze` | Analyze provided/default log content |
+| POST | `/api/logs/upload` | Replace a local log source and re-analyze |
 
-Suggestions, improvements, bug reports, and educational contributions are welcome.
-
-If contributing code:
-
-1. Fork the repository.
-2. Create a feature branch.
-3. Make your changes.
-4. Test the analyzer.
-5. Submit a pull request.
-
----
-
-# 📜 License
-
-This project is licensed under the **MIT License**.
-
-See the `LICENSE` file for details.
-
----
-
-# ⚡ Current Milestone
+Supported log types:
 
 ```text
-████████████████████░░░░░░░░░░░░░░░░░░░░
-
-Phases Completed: 5 / 12
-
-Current Progress
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-✅ Parser
-✅ Validation
-✅ Authentication Detection
-✅ Architecture
-✅ Alert & Email System
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🚀 Next: Web Attack Detection
+authentication
+web
+network
+arp
 ```
 
----
+Example POST `/api/analyze` body:
 
-<p align="center">
-  <strong>🛡️ Security Log Analyzer</strong>
-  <br>
-  Built as a hands-on cybersecurity and TypeScript learning project.
-</p>
+```json
+{
+  "webLogs": "2026-10-15 22:30:01 HTTP_REQUEST method=GET path=/ status=200 ip=192.168.1.10",
+  "sendNotifications": false
+}
+```
+
+## 🖥️ React Dashboard
+
+Install dashboard dependencies:
+
+```bash
+npm run dashboard:install
+```
+
+### Development mode
+
+Terminal 1:
+
+```bash
+npm run build
+npm run start
+```
+
+Terminal 2:
+
+```bash
+npm run dashboard:dev
+```
+
+Open:
+
+```text
+http://localhost:5173
+```
+
+### Production-style local run
+
+Build the dashboard:
+
+```bash
+npm run dashboard:build
+```
+
+Then start the API:
+
+```bash
+npm run start
+```
+
+Open:
+
+```text
+http://localhost:3001
+```
+
+The API serves `dashboard/dist` automatically when it exists.
+
+### Dashboard Features
+
+- Event/alert summary cards
+- Severity visualization
+- Attack-type chart
+- Searchable alert table
+- Severity filtering
+- Risk scores
+- Suspicious-IP ranking
+- Alert timeline
+- Raw log viewer
+- Authentication/web/network/ARP source selector
+- `.log` file upload/replacement
+- Responsive layout
+
+## 📊 Risk Scoring
+
+Base scores:
+
+| Severity | Base score |
+|---|---:|
+| LOW | 15 |
+| MEDIUM | 35 |
+| HIGH | 65 |
+| CRITICAL | 90 |
+
+Repeated activity from the same source and correlated attack chains can increase the score up to 100.
+
+## 🧠 Correlation Example
+
+A single IP appearing in several domains can produce an `ATTACK_CHAIN` alert:
+
+```text
+Brute force
+    ↓
+SQL injection
+    ↓
+Port scan
+    ↓
+Correlated CRITICAL attack chain
+```
+
+The bundled samples intentionally include cross-domain activity for testing this behavior.
+
+## 🔐 Security Notes
+
+This project is intended for defensive cybersecurity learning and authorized monitoring environments.
+
+Do not commit:
+- `.env`
+- email App Passwords
+- private production logs
+- credentials or API keys
+- `.notification-state.json`
+
+Real-world logs should be sanitized before sharing or committing.
+
+## 🛠️ Main Technologies
+
+- TypeScript / Node.js
+- Nodemailer + Yahoo SMTP
+- Node built-in HTTP API server
+- React
+- Vite
+- Git / GitHub
+
+## 🧭 Useful Commands
+
+```bash
+npm install
+npm run build
+npm test
+npm run analyze
+npm run start
+npm run dashboard:install
+npm run dashboard:dev
+npm run dashboard:build
+npm run build:all
+```
+
+## 📜 License
+
+MIT License. See `LICENSE`.
+
+## 🔮 Optional Future Enhancement
+
+Telegram mobile notifications can be added later by reusing the existing `Alert[]`, severity, deduplication, and cooldown pipeline.

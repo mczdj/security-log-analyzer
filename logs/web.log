@@ -13,3 +13,6 @@
 2026-10-15 22:33:02 HTTP_REQUEST method=GET path=/unknown2 status=404 ip=50.50.50.50
 2026-10-15 22:33:03 HTTP_REQUEST method=GET path=/unknown3 status=404 ip=50.50.50.50
 2026-10-15 22:33:04 HTTP_REQUEST method=GET path=/unknown4 status=404 ip=50.50.50.50
+2026-10-15 25:00:00 HTTP_REQUEST method=GET path=/bad-time status=200 ip=192.168.1.10
+2026-10-15 22:35:00 HTTP_REQUEST method=HACK path=/admin status=200 ip=192.168.1.10
+2026-10-15 22:35:10 HTTP_REQUEST method=GET path=/bad-status status=999 ip=192.168.1.10

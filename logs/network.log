@@ -1,0 +1,27 @@
+2026-10-15 22:40:01 NETWORK_CONNECTION src=192.168.1.20 dst=8.8.8.8 srcPort=53000 dstPort=53 protocol=DNS bytes=120 domain=example.com
+2026-10-15 22:40:02 NETWORK_CONNECTION src=192.168.1.20 dst=8.8.8.8 srcPort=53001 dstPort=53 protocol=DNS bytes=130 domain=updates.example.com
+
+2026-10-15 22:41:01 NETWORK_CONNECTION src=45.22.18.91 dst=192.168.1.10 srcPort=41001 dstPort=21 protocol=TCP bytes=60
+2026-10-15 22:41:02 NETWORK_CONNECTION src=45.22.18.91 dst=192.168.1.10 srcPort=41002 dstPort=22 protocol=TCP bytes=60
+2026-10-15 22:41:03 NETWORK_CONNECTION src=45.22.18.91 dst=192.168.1.10 srcPort=41003 dstPort=23 protocol=TCP bytes=60
+2026-10-15 22:41:04 NETWORK_CONNECTION src=45.22.18.91 dst=192.168.1.10 srcPort=41004 dstPort=25 protocol=TCP bytes=60
+2026-10-15 22:41:05 NETWORK_CONNECTION src=45.22.18.91 dst=192.168.1.10 srcPort=41005 dstPort=80 protocol=TCP bytes=60
+2026-10-15 22:41:06 NETWORK_CONNECTION src=45.22.18.91 dst=192.168.1.10 srcPort=41006 dstPort=443 protocol=TCP bytes=60
+
+2026-10-15 22:42:01 NETWORK_CONNECTION src=70.70.70.70 dst=192.168.1.50 srcPort=50001 dstPort=443 protocol=TCP bytes=64
+2026-10-15 22:42:01 NETWORK_CONNECTION src=70.70.70.70 dst=192.168.1.50 srcPort=50002 dstPort=443 protocol=TCP bytes=64
+2026-10-15 22:42:02 NETWORK_CONNECTION src=70.70.70.70 dst=192.168.1.50 srcPort=50003 dstPort=443 protocol=TCP bytes=64
+2026-10-15 22:42:02 NETWORK_CONNECTION src=70.70.70.70 dst=192.168.1.50 srcPort=50004 dstPort=443 protocol=TCP bytes=64
+2026-10-15 22:42:03 NETWORK_CONNECTION src=70.70.70.70 dst=192.168.1.50 srcPort=50005 dstPort=443 protocol=TCP bytes=64
+2026-10-15 22:42:03 NETWORK_CONNECTION src=70.70.70.70 dst=192.168.1.50 srcPort=50006 dstPort=443 protocol=TCP bytes=64
+2026-10-15 22:42:04 NETWORK_CONNECTION src=70.70.70.70 dst=192.168.1.50 srcPort=50007 dstPort=443 protocol=TCP bytes=64
+2026-10-15 22:42:04 NETWORK_CONNECTION src=70.70.70.70 dst=192.168.1.50 srcPort=50008 dstPort=443 protocol=TCP bytes=64
+2026-10-15 22:42:05 NETWORK_CONNECTION src=70.70.70.70 dst=192.168.1.50 srcPort=50009 dstPort=443 protocol=TCP bytes=64
+2026-10-15 22:42:05 NETWORK_CONNECTION src=70.70.70.70 dst=192.168.1.50 srcPort=50010 dstPort=443 protocol=TCP bytes=64
+
+2026-10-15 22:43:01 NETWORK_CONNECTION src=91.91.91.91 dst=192.168.1.25 srcPort=51515 dstPort=3389 protocol=TCP bytes=100
+2026-10-15 22:43:20 NETWORK_CONNECTION src=192.168.1.30 dst=8.8.8.8 srcPort=53530 dstPort=53 protocol=DNS bytes=240 domain=abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnop.example.com
+2026-10-15 22:43:30 NETWORK_CONNECTION src=192.168.1.40 dst=8.8.4.4 srcPort=53531 dstPort=5353 protocol=DNS bytes=100 domain=test.example.com
+
+2026-10-15 22:44:00 NETWORK_CONNECTION src=999.1.1.1 dst=192.168.1.10 srcPort=50000 dstPort=80 protocol=TCP bytes=100
+2026-10-15 22:44:10 NETWORK_CONNECTION src=192.168.1.10 dst=192.168.1.20 srcPort=50000 dstPort=80 protocol=FTP bytes=100

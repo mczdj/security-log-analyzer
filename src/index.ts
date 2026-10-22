@@ -1,327 +1,73 @@
-import {
-  readFileSync
-} from "node:fs";
+import { analyzeDefaultFiles } from "./core/analyze";
+import { processNotifications } from "./notification/notificationManager";
+import { writeSecurityReports } from "./reporting/reportGenerator";
 
-import type {
-  Alert
-} from "./shared/alertTypes";
+async function main(): Promise<void> {
+  const result = analyzeDefaultFiles();
 
-import {
-  parseLogs
-} from "./authentication/parser";
+  console.log("\n===== SECURITY LOG ANALYZER =====");
+  console.log(`Generated: ${result.generatedAt}`);
 
-import {
-  analyzeAuthentication
-} from "./authentication/analyzer";
+  console.log("\n===== EVENT SUMMARY =====");
+  console.log(`Authentication: ${result.stats.authentication.valid} valid / ${result.stats.authentication.invalid} invalid`);
+  console.log(`Web: ${result.stats.web.valid} valid / ${result.stats.web.invalid} invalid`);
+  console.log(`Network: ${result.stats.network.valid} valid / ${result.stats.network.invalid} invalid`);
+  console.log(`ARP: ${result.stats.arp.valid} valid / ${result.stats.arp.invalid} invalid`);
+  console.log(`Total events: ${result.stats.totalEvents}`);
 
-import {
-  detectBruteForce
-} from "./authentication/detectors/bruteForce";
-
-import {
-  detectPasswordSpray
-} from "./authentication/detectors/passwordSpray";
-
-import {
-  detectDistributedAttack
-} from "./authentication/detectors/distributedAttack";
-
-import {
-  detectSuccessAfterFailures
-} from "./authentication/detectors/successAfterFailures";
-
-import {
-  processNotifications
-} from "./notification/notificationManager";
-
-// =========================================
-// MAIN APPLICATION
-// =========================================
-
-async function main():
-Promise<void> {
-
-  // =========================================
-  // READ AUTHENTICATION LOGS
-  // =========================================
-
-  const logs: string =
-    readFileSync(
-      "./logs/authentication.log",
-      "utf8"
-    );
-
-  // =========================================
-  // PARSE AUTHENTICATION LOGS
-  // =========================================
-
-  const {
-    entries,
-    invalidLogs
-  } = parseLogs(
-    logs
-  );
-
-  // =========================================
-  // DISPLAY INVALID LOGS
-  // =========================================
-
-  for (
-    const invalidLog of
-    invalidLogs
-  ) {
-    console.log(
-      "⚠ Invalid log detected:"
-    );
-
-    console.log(
-      invalidLog.line
-    );
-
-    console.log(
-      `Reason: ${invalidLog.reason}\n`
-    );
-  }
-
-  // =========================================
-  // ANALYZE AUTHENTICATION
-  // =========================================
-
-  const analysis =
-    analyzeAuthentication(
-      entries
-    );
-
-  // =========================================
-  // AUTHENTICATION SUMMARY
-  // =========================================
-
-  console.log(
-    "\n===== AUTHENTICATION SUMMARY ====="
-  );
-
-  console.log(
-    `Total valid events: ${entries.length}`
-  );
-
-  console.log(
-    `Successful logins: ${analysis.successfulLogins}`
-  );
-
-  console.log(
-    `Failed logins: ${analysis.failedLogins}`
-  );
-
-  // =========================================
-  // FAILED LOGINS BY IP
-  // =========================================
-
-  console.log(
-    "\n===== FAILED LOGIN ATTEMPTS BY IP ====="
-  );
-
-  for (
-    const ip in
-    analysis.failedLoginCounts
-  ) {
-    const attempts: number =
-      analysis.failedLoginCounts[
-        ip
-      ] ?? 0;
-
-    console.log(
-      `${ip}: ${attempts} failed attempt(s)`
-    );
-  }
-
-  // =========================================
-  // RUN AUTHENTICATION DETECTORS
-  // =========================================
-
-  const bruteForceAlerts:
-    Alert[] =
-      detectBruteForce(
-        analysis.failedLoginTimes
-      );
-
-  const passwordSprayAlerts:
-    Alert[] =
-      detectPasswordSpray(
-        analysis.failedUsersByIp
-      );
-
-  const distributedAttackAlerts:
-    Alert[] =
-      detectDistributedAttack(
-        analysis.failedIpsByUser
-      );
-
-  const successAfterFailureAlerts:
-    Alert[] =
-      detectSuccessAfterFailures(
-        entries
-      );
-
-  // =========================================
-  // COMBINE SECURITY ALERTS
-  // =========================================
-
-  const securityAlerts:
-    Alert[] = [
-      ...bruteForceAlerts,
-      ...passwordSprayAlerts,
-      ...distributedAttackAlerts,
-      ...successAfterFailureAlerts
-    ];
-
-  // =========================================
-  // DISPLAY SECURITY ALERTS
-  // =========================================
-
-  console.log(
-    "\n===== SECURITY ALERTS ====="
-  );
-
-  if (
-    securityAlerts.length === 0
-  ) {
-    console.log(
-      "No suspicious authentication activity detected."
-    );
+  console.log("\n===== INVALID LOGS =====");
+  if (result.invalidLogs.length === 0) {
+    console.log("No invalid logs detected.");
   } else {
-
-    for (
-      const alert of
-      securityAlerts
-    ) {
-
-      const icon: string =
-        alert.severity ===
-          "HIGH" ||
-        alert.severity ===
-          "CRITICAL"
-          ? "🚨"
-          : "⚠";
-
-      console.log(
-        `${icon} [${alert.severity}] ${alert.message}`
-      );
-
-      if (
-        alert.type ===
-        "PASSWORD_SPRAY"
-      ) {
-        const usernames =
-          alert.evidence.usernames;
-
-        if (
-          Array.isArray(
-            usernames
-          )
-        ) {
-          console.log(
-            `   Usernames: ${usernames.join(", ")}`
-          );
-        }
-      }
-
-      if (
-        alert.type ===
-        "DISTRIBUTED_ACCOUNT_ATTACK"
-      ) {
-        const ipAddresses =
-          alert.evidence.ipAddresses;
-
-        if (
-          Array.isArray(
-            ipAddresses
-          )
-        ) {
-          console.log(
-            `   IP addresses: ${ipAddresses.join(", ")}`
-          );
-        }
-      }
+    for (const invalidLog of result.invalidLogs) {
+      console.log(`[${invalidLog.source}] ${invalidLog.line}`);
+      console.log(`Reason: ${invalidLog.reason}\n`);
     }
   }
 
-  // =========================================
-  // EMAIL NOTIFICATIONS
-  // =========================================
+  console.log("\n===== SECURITY ALERTS =====");
+  if (result.alerts.length === 0) {
+    console.log("No suspicious activity detected.");
+  } else {
+    for (const alert of result.alerts) {
+      const icon = alert.severity === "CRITICAL" ? "🛑" : alert.severity === "HIGH" ? "🚨" : "⚠";
+      console.log(`${icon} [${alert.severity}] [Risk ${alert.riskScore ?? 0}] ${alert.type} - ${alert.message}`);
+    }
+  }
 
-  console.log(
-    "\n===== NOTIFICATIONS ====="
-  );
+  console.log("\n===== SEVERITY SUMMARY =====");
+  console.log(`LOW: ${result.stats.severityCounts.LOW}`);
+  console.log(`MEDIUM: ${result.stats.severityCounts.MEDIUM}`);
+  console.log(`HIGH: ${result.stats.severityCounts.HIGH}`);
+  console.log(`CRITICAL: ${result.stats.severityCounts.CRITICAL}`);
 
-  const notificationSummary =
-    await processNotifications(
-      securityAlerts
-    );
+  console.log("\n===== TOP SUSPICIOUS IPS =====");
+  for (const item of result.suspiciousIps.slice(0, 10)) {
+    console.log(`${item.ipAddress}: alerts=${item.alertCount}, severity=${item.highestSeverity}, risk=${item.maxRiskScore}`);
+  }
 
-  // =========================================
-  // NOTIFICATION SUMMARY
-  // =========================================
+  console.log("\n===== NOTIFICATIONS =====");
+  const notificationsEnabled = process.env.NOTIFICATIONS_ENABLED !== "false";
 
-  console.log(
-    "\n===== NOTIFICATION SUMMARY ====="
-  );
+  if (notificationsEnabled) {
+    const notificationSummary = await processNotifications(result.alerts);
+    console.log(`Emails sent: ${notificationSummary.sent}`);
+    console.log(`Alerts included in emails: ${notificationSummary.alertsIncluded}`);
+    console.log(`Duplicates skipped: ${notificationSummary.duplicateSkipped}`);
+    console.log(`Cooldown skips: ${notificationSummary.cooldownSkipped}`);
+    console.log(`Failed notifications: ${notificationSummary.failed}`);
+  } else {
+    console.log("Email notifications disabled by NOTIFICATIONS_ENABLED=false");
+  }
 
-  console.log(
-    `Emails sent: ${notificationSummary.sent}`
-  );
-
-  console.log(
-    `Alerts included in emails: ${notificationSummary.alertsIncluded}`
-  );
-
-  console.log(
-    `Duplicates skipped: ${notificationSummary.duplicateSkipped}`
-  );
-
-  console.log(
-    `Cooldown skips: ${notificationSummary.cooldownSkipped}`
-  );
-
-  console.log(
-    `Failed notifications: ${notificationSummary.failed}`
-  );
-
-  // =========================================
-  // VALID LOGS
-  // =========================================
-
-  console.log(
-    "\n===== VALID LOGS ====="
-  );
-
-  console.log(
-    entries
-  );
+  const reportPaths = writeSecurityReports(result);
+  console.log("\n===== REPORTS =====");
+  console.log(`JSON report: ${reportPaths.jsonPath}`);
+  console.log(`Text summary: ${reportPaths.textPath}`);
 }
 
-// =========================================
-// START APPLICATION
-// =========================================
-
-main().catch(
-  (
-    error: unknown
-  ) => {
-
-    console.error(
-      "Fatal application error:"
-    );
-
-    if (
-      error instanceof Error
-    ) {
-      console.error(
-        error.message
-      );
-    } else {
-      console.error(
-        error
-      );
-    }
-  }
-);
+main().catch((error: unknown) => {
+  console.error("Fatal application error:");
+  console.error(error instanceof Error ? error.message : error);
+  process.exitCode = 1;
+});

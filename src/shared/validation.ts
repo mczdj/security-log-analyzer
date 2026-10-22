@@ -81,3 +81,19 @@ export function isValidIPv4(
     }
   );
 }
+// =========================================
+// PRIVATE IPV4 CHECK
+// =========================================
+
+export function isPrivateIPv4(ipAddress: string): boolean {
+  if (!isValidIPv4(ipAddress)) return false;
+
+  const [a, b] = ipAddress.split(".").map(Number);
+
+  return (
+    a === 10 ||
+    (a === 172 && b! >= 16 && b! <= 31) ||
+    (a === 192 && b === 168) ||
+    a === 127
+  );
+}
